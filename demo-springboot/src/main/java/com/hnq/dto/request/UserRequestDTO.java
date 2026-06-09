@@ -1,7 +1,9 @@
 package com.hnq.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.hnq.util.EnumPattern;
 import com.hnq.util.PhoneNumber;
+import com.hnq.util.UserStatus;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -30,6 +32,13 @@ public class UserRequestDTO implements Serializable {
 
     @NotEmpty(message = "addresses can not empty")
     private List<String> addresses;
+
+    @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
+    private UserStatus status;
+
+    public UserStatus getStatus() {
+        return status;
+    }
 
     public UserRequestDTO(String phone, String email, String firstName, String lastName) {
         this.firstName = firstName;
