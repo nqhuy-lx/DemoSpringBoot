@@ -1,6 +1,8 @@
 package com.hnq.controller;
 
 import com.hnq.dto.request.UserRequestDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -10,12 +12,12 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     @PostMapping(value = "/", headers = "apikey=v1.0")
-    public String addUser(@RequestBody UserRequestDTO requets){
+    public String addUser(@Valid @RequestBody UserRequestDTO requets){
         return "add user success";
     }
 
     @PutMapping("{userId}")
-    public String updateUser(@PathVariable int userId, @RequestBody UserRequestDTO requets){
+    public String updateUser(@Min(1) @PathVariable int userId, @Valid @RequestBody UserRequestDTO requets){
         System.out.println("update user success = " + userId);
         return "update user success";
     }
