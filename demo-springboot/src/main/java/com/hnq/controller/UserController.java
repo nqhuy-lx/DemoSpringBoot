@@ -1,8 +1,12 @@
 package com.hnq.controller;
 
 import com.hnq.dto.request.UserRequestDTO;
+import com.hnq.dto.respone.ResponeData;
+import com.hnq.dto.respone.ResponeSuccess;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,9 +15,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
     @PostMapping(value = "/", headers = "apikey=v1.0")
-    public String addUser(@Valid @RequestBody UserRequestDTO requets){
-        return "add user success";
+    public ResponeData<Integer> addUser( @RequestBody UserRequestDTO requets){
+        return new ResponeData<>(HttpStatus.CREATED.value(), "User Added", 1);
     }
 
     @PutMapping("{userId}")
@@ -35,17 +40,18 @@ public class UserController {
     }
 
     @GetMapping("{userId}")
-    public UserRequestDTO getUser(@PathVariable int userId){
+    public ResponeData<UserRequestDTO> getUser(@PathVariable int userId){
         System.out.println("get user have id = " + userId);
-        return new UserRequestDTO("phone", "email", "huy", "nguyen");
+        UserRequestDTO u = new UserRequestDTO("phone", "email", "huy", "nguyen");
+        return new ResponeData<>(HttpStatus.CREATED.value(), "User detail", null);
     }
 
     @GetMapping("/")
-    public List<UserRequestDTO> getUsers(){
+    public ResponeData<List<UserRequestDTO>> getUsers(){
         List<UserRequestDTO> users = new ArrayList<>();
         users.add(new UserRequestDTO("phone", "email", "huy", "nguyen"));
         users.add(new UserRequestDTO("phone", "email", "huy", "nguyen"));
         users.add(new UserRequestDTO("phone", "email", "huy", "nguyen"));
-        return users;
+        return new  ResponeData<>(HttpStatus.CREATED.value(), "User list", users);
     }
 }
