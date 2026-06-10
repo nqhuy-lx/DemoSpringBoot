@@ -17,7 +17,7 @@ import java.util.List;
 public class UserController {
     @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
     @PostMapping(value = "/", headers = "apikey=v1.0")
-    public ResponeData<Integer> addUser( @RequestBody UserRequestDTO requets){
+    public ResponeData<Integer> addUser(@Valid @RequestBody UserRequestDTO requets){
         return new ResponeData<>(HttpStatus.CREATED.value(), "User Added", 1);
     }
 
