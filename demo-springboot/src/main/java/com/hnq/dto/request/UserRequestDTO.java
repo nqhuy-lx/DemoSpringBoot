@@ -5,12 +5,14 @@ import com.hnq.util.EnumPattern;
 import com.hnq.util.PhoneNumber;
 import com.hnq.util.UserStatus;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@Getter
 public class UserRequestDTO implements Serializable {
     @NotBlank(message = "first name must be not blank")
     private String firstName;
@@ -36,10 +38,6 @@ public class UserRequestDTO implements Serializable {
     @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
     private UserStatus status;
 
-    public UserStatus getStatus() {
-        return status;
-    }
-
     public UserRequestDTO(String phone, String email, String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -47,27 +45,4 @@ public class UserRequestDTO implements Serializable {
         this.phone = phone;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public List<String> getAddresses() {
-        return addresses;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
 }

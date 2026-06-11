@@ -2,22 +2,24 @@ package com.hnq.controller;
 
 import com.hnq.dto.request.UserRequestDTO;
 import com.hnq.dto.respone.ResponeData;
-import com.hnq.dto.respone.ResponeSuccess;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j// log
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
     @PostMapping(value = "/", headers = "apikey=v1.0")
-    public ResponeData<Integer> addUser(@Valid @RequestBody UserRequestDTO requets){
+    public ResponeData<Integer> addUser(@Valid @RequestBody UserRequestDTO request){
+        log.info("Adding user {} {}", request.getFirstName(), request.getLastName());
         return new ResponeData<>(HttpStatus.CREATED.value(), "User Added", 1);
     }
 
