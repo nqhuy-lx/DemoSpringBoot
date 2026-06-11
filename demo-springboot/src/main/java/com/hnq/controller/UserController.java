@@ -1,5 +1,6 @@
 package com.hnq.controller;
 
+import com.hnq.component.Translator;
 import com.hnq.dto.request.UserRequestDTO;
 import com.hnq.dto.respone.ResponeData;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,7 @@ public class UserController {
     @PostMapping(value = "/", headers = "apikey=v1.0")
     public ResponeData<Integer> addUser(@Valid @RequestBody UserRequestDTO request){
         log.info("Adding user {} {}", request.getFirstName(), request.getLastName());
-        return new ResponeData<>(HttpStatus.CREATED.value(), "User Added", 1);
+        return new ResponeData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), 1);
     }
 
     @PutMapping("{userId}")
