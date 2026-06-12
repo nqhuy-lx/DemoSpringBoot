@@ -22,7 +22,7 @@ public class UserController {
     @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
     @PostMapping(value = "/", headers = "apiKey=v1.0")
     public ResponeData<Integer> addUser(@Valid @RequestBody UserRequestDTO request){
-        log.info("Adding user {} {}", request.getFirstName(), request.getLastName());
+//        log.info("Adding user {} {}", request.getFirstName(), request.getLastName());
         return new ResponeData<>(HttpStatus.CREATED.value(), Translator.toLocale("user.add.success"), 1);
     }
 
