@@ -1,4 +1,4 @@
-package com.hnq.util;
+package com.hnq.validator;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

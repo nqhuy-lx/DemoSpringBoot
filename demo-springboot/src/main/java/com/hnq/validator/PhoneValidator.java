@@ -1,9 +1,7 @@
-package com.hnq.util;
+package com.hnq.validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.lang.annotation.Annotation;
 
 public class PhoneValidator implements ConstraintValidator<PhoneNumber, String> {
     @Override

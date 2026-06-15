@@ -1,48 +1,75 @@
 package com.hnq.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.hnq.util.EnumPattern;
-import com.hnq.util.PhoneNumber;
+import com.hnq.util.Gender;
+import com.hnq.validator.EnumPattern;
+import com.hnq.validator.PhoneNumber;
 import com.hnq.util.UserStatus;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import com.hnq.validator.EnumValue;
+import com.hnq.validator.GenderSubset;
+import com.hnq.util.UserType;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+
+import static com.hnq.util.Gender.*;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDTO implements Serializable {
-    @NotBlank(message = "first name must be not blank")
+
+    @NotBlank(message = "firstName must be not blank") // Khong cho phep gia tri blank
     private String firstName;
 
-    @NotNull(message = "last name must be not null")
+    @NotNull(message = "lastName must be not null") // Khong cho phep gia tri null
     private String lastName;
 
-    @Email(message = "email invalid format")
+    @Email(message = "email invalid format") // Chi chap nhan nhung gia tri dung dinh dang email
     private String email;
 
     //@Pattern(regexp = "^\\d{10}$", message = "phone invalid format")
-    @PhoneNumber
+    @PhoneNumber(message = "phone invalid format")
     private String phone;
 
     @NotNull(message = "dateOfBirth must be not null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "MM/dd/yyyy")
     private Date dateOfBirth;
 
-    @NotEmpty(message = "addresses can not empty")
-    private List<String> addresses;
+    //@Pattern(regexp = "^male|female|other$", message = "gender must be one in {male, female, other}")
+    @GenderSubset(anyOf = {MALE, FEMALE, OTHER})
+    private Gender gender;
+
+    @NotNull(message = "username must be not null")
+    private String username;
+
+    @NotNull(message = "password must be not null")
+    private String password;
+
+    @NotNull(message = "type must be not null")
+    @EnumValue(name = "type", enumClass = UserType.class)
+    private String type;
 
     @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
     private UserStatus status;
 
-    public UserRequestDTO(String phone, String email, String firstName, String lastName) {
+    @NotEmpty(message = "addresses can not empty")
+    private Set<AddressDTO> addresses;
+
+    public UserRequestDTO(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
     }
-
 }
