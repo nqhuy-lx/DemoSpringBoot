@@ -17,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Slf4j // log
 @RestController
 @RequestMapping("/users")
@@ -101,6 +98,15 @@ public class UserController {
                                                               @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
                                                               @RequestParam(required = false) String sortBy) {
         log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsers(pageNo, pageSize,  sortBy));
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortBy(pageNo, pageSize,  sortBy));
+    }
+
+    @GetMapping("/list-with-sort-by-and-search")
+    public ResponseData<?> getAllUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                       @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                       @RequestParam(required = false) String sortBy,
+                                       @RequestParam(required = false) String search) {
+        log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortByAndSearch(pageNo, pageSize,  sortBy, search));
     }
 }

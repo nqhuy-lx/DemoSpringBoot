@@ -8,6 +8,7 @@ import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.exception.ResourceNotFoundException;
 import com.hnq.model.Address;
 import com.hnq.model.User;
+import com.hnq.repository.SearchRepository;
 import com.hnq.repository.UserRepository;
 import com.hnq.service.UserService;
 import com.hnq.util.UserStatus;
@@ -32,7 +33,9 @@ import java.util.regex.Pattern;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
+    private final SearchRepository searchRepository;
 
     @Override
     public long saveUser(UserRequestDTO request) {
@@ -117,7 +120,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResponse<?> getAllUsers(int page, int size, String sortBy) {
+    public PageResponse<?> getAllUsersWithSortBy(int page, int size, String sortBy) {
         int p = 0;
         if (page > 0) {
             p = page - 1;
@@ -155,6 +158,12 @@ public class UserServiceImpl implements UserService {
                 .build();
 
     }
+
+    @Override
+    public PageResponse<?> getAllUsersWithSortByAndSearch(int page, int size, String sortBy, String search) {
+        return searchRepository.getAllUsersWithSortByAndSearch(page, size, sortBy, search);
+    }
+
 
     private Set<Address> convertToAddress(Set<AddressDTO> addresses) {
         Set<Address> result = new HashSet<>();

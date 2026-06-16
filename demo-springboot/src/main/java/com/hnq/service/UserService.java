@@ -5,8 +5,6 @@ import com.hnq.dto.response.PageResponse;
 import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.util.UserStatus;
 
-import java.util.List;
-
 public interface UserService {
     long saveUser(UserRequestDTO request);
 
@@ -18,5 +16,7 @@ public interface UserService {
 
     UserDetailResponse getUser(long userId);
 
-    PageResponse<?> getAllUsers(int page, int size, String sortBy);
+    PageResponse<?> getAllUsersWithSortBy(int page, int size, String sortBy);
+
+    PageResponse<?> getAllUsersWithSortByAndSearch(int page, int size, String sortBy, String search);
 }

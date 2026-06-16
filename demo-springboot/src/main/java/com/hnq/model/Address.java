@@ -10,7 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "tbl_address")
+@Entity(name = "Address")
+@Table(name = "tbl_address")
 public class Address extends AbstractEntity {
 
     @Column(name = "apartment_number")
