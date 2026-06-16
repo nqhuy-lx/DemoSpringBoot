@@ -1,5 +1,6 @@
 package com.hnq.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hnq.util.Gender;
 import com.hnq.util.UserType;
 import com.hnq.util.UserStatus;
@@ -58,6 +59,7 @@ public class User extends AbstractEntity{
     @Column(name = "status")
     private UserStatus status;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private Set<Address> addresses = new HashSet<>();
 

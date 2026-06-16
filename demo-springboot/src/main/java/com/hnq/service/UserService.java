@@ -19,4 +19,6 @@ public interface UserService {
     PageResponse<?> getAllUsersWithSortBy(int page, int size, String sortBy);
 
     PageResponse<?> getAllUsersWithSortByAndSearch(int page, int size, String sortBy, String search);
+
+    PageResponse<?> advanceSearchWithCriteria(int page, int size, String sortBy, String... search);
 }

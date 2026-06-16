@@ -1,9 +1,17 @@
 package com.hnq.repository;
 
 import com.hnq.dto.response.PageResponse;
+import com.hnq.model.User;
+import com.hnq.repository.criteria.SearchCriteria;
+import com.hnq.repository.criteria.UserSearchCriteriaQueryConsumer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -11,10 +19,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Repository
 public class SearchRepository {
 
@@ -72,5 +82,58 @@ public class SearchRepository {
                 .totalPage(p.getTotalPages())
                 .items(p.stream().toList())
                 .build();
+    }
+
+    public PageResponse<?> advanceSearchUser(int page, int size, String sortBy, String... search){
+        // firstName:huy, lastName:Nguyen (param search)
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+        // 1. list user
+        if (search != null) {
+            log.info("search user by criteria");
+            for(String s: search) {
+                Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(.*)");
+                Matcher matcher = pattern.matcher(s);
+                if (matcher.find()) {
+                    criteriaList.add(new SearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
+                }
+            }
+        }
+        // 2. total record
+        List<User> users = getUsers(page, size, criteriaList, sortBy);
+
+        return PageResponse.builder()
+                .pageNo(page)
+                .pageSize(size)
+                .totalPage(0)
+                .items(users)
+                .build();
+    }
+
+    private List<User> getUsers(int page, int size, List<SearchCriteria> criteriaList, String sortBy) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+        Root<User> userRoot = criteriaQuery.from(User.class);
+
+        // search
+        Predicate predicate = criteriaBuilder.conjunction();
+        UserSearchCriteriaQueryConsumer consumer = new UserSearchCriteriaQueryConsumer(criteriaBuilder, predicate, userRoot);
+
+        criteriaList.forEach(consumer);
+        predicate = consumer.getPredicate();
+
+        criteriaQuery.where(predicate);
+        //sort
+        if (StringUtils.hasText(sortBy)) {
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(asc|desc)");
+            Matcher matcher = pattern.matcher(sortBy);
+            if (matcher.find()) {
+                String columnName = matcher.group(1);
+                if(matcher.group(3).equalsIgnoreCase("desc"))
+                    criteriaQuery.orderBy(criteriaBuilder.desc(userRoot.get(columnName)));
+                else
+                    criteriaQuery.orderBy(criteriaBuilder.asc(userRoot.get(columnName)));
+            }
+        }
+        return entityManager.createQuery(criteriaQuery).setFirstResult(page  * size).setMaxResults(size).getResultList();
     }
 }

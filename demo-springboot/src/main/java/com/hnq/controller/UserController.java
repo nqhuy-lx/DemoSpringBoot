@@ -109,4 +109,13 @@ public class UserController {
         log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
         return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortByAndSearch(pageNo, pageSize,  sortBy, search));
     }
+
+    @GetMapping("/advance-search-with-criteria")
+    public ResponseData<?> advanceSearchWithCriteria(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                       @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                       @RequestParam(required = false) String sortBy,
+                                       @RequestParam(defaultValue = "") String... search) {
+        log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.advanceSearchWithCriteria(pageNo, pageSize,  sortBy, search));
+    }
 }

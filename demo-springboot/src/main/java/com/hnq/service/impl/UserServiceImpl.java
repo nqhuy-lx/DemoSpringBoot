@@ -164,6 +164,11 @@ public class UserServiceImpl implements UserService {
         return searchRepository.getAllUsersWithSortByAndSearch(page, size, sortBy, search);
     }
 
+    @Override
+    public PageResponse<?> advanceSearchWithCriteria(int page, int size, String sortBy, String... search) {
+        return searchRepository.advanceSearchUser(page, size, sortBy, search);
+    }
+
 
     private Set<Address> convertToAddress(Set<AddressDTO> addresses) {
         Set<Address> result = new HashSet<>();
