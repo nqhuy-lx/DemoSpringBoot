@@ -1,6 +1,5 @@
 package com.hnq.service.impl;
 
-import com.hnq.component.Translator;
 import com.hnq.dto.request.AddressDTO;
 import com.hnq.dto.request.UserRequestDTO;
 import com.hnq.dto.response.PageResponse;
@@ -10,16 +9,18 @@ import com.hnq.model.Address;
 import com.hnq.model.User;
 import com.hnq.repository.SearchRepository;
 import com.hnq.repository.UserRepository;
+import com.hnq.repository.specification.UserSpec;
 import com.hnq.service.UserService;
+import com.hnq.util.Gender;
 import com.hnq.util.UserStatus;
 import com.hnq.util.UserType;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -167,6 +168,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResponse<?> advanceSearchWithCriteria(int page, int size, String sortBy, String... search) {
         return searchRepository.advanceSearchUser(page, size, sortBy, search);
+    }
+
+    @Override
+    public PageResponse<?> advanceSearchWithSpecification(Pageable pageable, String[] user, String[] address) {
+        if(user != null && address != null){
+            // join
+        } else if(user != null){
+            /* search in user, not join in address */
+            Specification<User> specFirstName = UserSpec.hasFirstName("Huy");
+            Specification<User> specGender = UserSpec.notEqualGender(Gender.FEMALE);
+            Specification<User> specFinal = specFirstName.and(specGender);
+            // Specification<User> spec = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("firstName"), "%Huy%"));
+            List<User> list = userRepository.findAll(specFinal);
+            return PageResponse.builder()
+                    .pageNo(pageable.getPageNumber())
+                    .pageSize(pageable.getPageSize())
+                    .totalPage(10)
+                    .items(list)
+                    .build();
+        }
+
+
+        Page<User> users = userRepository.findAll(pageable);
+        return PageResponse.builder()
+                .pageNo(pageable.getPageNumber())
+                .pageSize(pageable.getPageSize())
+                .totalPage(users.getTotalPages())
+                .items(users.stream().toList())
+                .build();
     }
 
 

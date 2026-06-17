@@ -4,6 +4,7 @@ import com.hnq.dto.request.UserRequestDTO;
 import com.hnq.dto.response.PageResponse;
 import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.util.UserStatus;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
     long saveUser(UserRequestDTO request);
@@ -21,4 +22,6 @@ public interface UserService {
     PageResponse<?> getAllUsersWithSortByAndSearch(int page, int size, String sortBy, String search);
 
     PageResponse<?> advanceSearchWithCriteria(int page, int size, String sortBy, String... search);
+
+    PageResponse<?> advanceSearchWithSpecification(Pageable pageable, String[] user, String[] address);
 }

@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,10 +96,10 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseData<?> getAllUsers(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                                              @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
-                                                              @RequestParam(required = false) String sortBy) {
+                                       @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                       @RequestParam(required = false) String sortBy) {
         log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortBy(pageNo, pageSize,  sortBy));
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortBy(pageNo, pageSize, sortBy));
     }
 
     @GetMapping("/list-with-sort-by-and-search")
@@ -107,15 +108,23 @@ public class UserController {
                                        @RequestParam(required = false) String sortBy,
                                        @RequestParam(required = false) String search) {
         log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortByAndSearch(pageNo, pageSize,  sortBy, search));
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.getAllUsersWithSortByAndSearch(pageNo, pageSize, sortBy, search));
     }
 
     @GetMapping("/advance-search-with-criteria")
     public ResponseData<?> advanceSearchWithCriteria(@RequestParam(defaultValue = "0", required = false) int pageNo,
-                                       @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
-                                       @RequestParam(required = false) String sortBy,
-                                       @RequestParam(defaultValue = "") String... search) {
+                                                     @Min(10) @RequestParam(defaultValue = "20", required = false) int pageSize,
+                                                     @RequestParam(required = false) String sortBy,
+                                                     @RequestParam(defaultValue = "") String... search) {
         log.info("Request get user list, pageNo={}, pageSize={}", pageNo, pageSize);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.advanceSearchWithCriteria(pageNo, pageSize,  sortBy, search));
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.advanceSearchWithCriteria(pageNo, pageSize, sortBy, search));
+    }
+
+    @GetMapping("/advance-search-with-specification")
+    public ResponseData<?> advanceSearchWithSpecification(Pageable pageable,
+                                                          @RequestParam(required = false) String[] user,
+                                                          @RequestParam(required = false) String[] address) {
+        log.info("Request get user list by specification");
+        return new ResponseData<>(HttpStatus.CREATED.value(), "User list", userService.advanceSearchWithSpecification(pageable, user, address));
     }
 }
