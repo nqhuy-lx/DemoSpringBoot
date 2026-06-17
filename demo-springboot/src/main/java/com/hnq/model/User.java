@@ -54,6 +54,10 @@ public class User extends AbstractEntity{
     @Column(name = "type")
     private UserType type;
 
+    private Integer age;
+
+    private Boolean active;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status")
