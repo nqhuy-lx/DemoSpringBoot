@@ -4,10 +4,13 @@ import com.hnq.dto.request.UserRequestDTO;
 import com.hnq.dto.response.PageResponse;
 import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.util.UserStatus;
+import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Pageable;
 
+import java.io.UnsupportedEncodingException;
+
 public interface UserService {
-    long saveUser(UserRequestDTO request);
+    long saveUser(UserRequestDTO request) throws MessagingException, UnsupportedEncodingException;
 
     void updateUser(long userId, UserRequestDTO request);
 
@@ -24,4 +27,6 @@ public interface UserService {
     PageResponse<?> advanceSearchWithCriteria(int page, int size, String sortBy, String... search);
 
     PageResponse<?> advanceSearchWithSpecification(Pageable pageable, String[] user, String[] address);
+
+    void confirmUser(int userId, String secretCode);
 }

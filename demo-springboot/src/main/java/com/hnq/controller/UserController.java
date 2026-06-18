@@ -10,6 +10,8 @@ import com.hnq.service.UserService;
 import com.hnq.util.UserStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Slf4j // log
 @RestController
@@ -63,6 +67,21 @@ public class UserController {
         } catch (Exception e) {
             log.error("failed to change status user, errorMessage={}", e.getMessage());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Change status fail");
+        }
+    }
+
+    @GetMapping("/confirm/{userId}")
+    public ResponseData<Void> confirmUser(@PathVariable int userId, @RequestParam String secretCode, HttpServletResponse response) throws IOException {
+        log.info("confirm user, userId={}", userId);
+
+        try {
+            userService.confirmUser(userId, secretCode);
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), "confirm user success");
+        } catch (Exception e) {
+            log.error("failed to confirm user, errorMessage={}", e.getMessage());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "confirm fail");
+        } finally {
+            response.sendRedirect("http://localhost:8080/swagger-ui/index.html");
         }
     }
 

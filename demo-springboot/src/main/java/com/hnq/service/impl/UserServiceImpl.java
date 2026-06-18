@@ -7,13 +7,16 @@ import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.exception.ResourceNotFoundException;
 import com.hnq.model.Address;
 import com.hnq.model.User;
+import com.hnq.repository.AddressRepository;
 import com.hnq.repository.SearchRepository;
 import com.hnq.repository.UserRepository;
 import com.hnq.repository.specification.UserSpec;
+import com.hnq.service.MailService;
 import com.hnq.service.UserService;
 import com.hnq.util.Gender;
 import com.hnq.util.UserStatus;
 import com.hnq.util.UserType;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -37,9 +41,10 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final SearchRepository searchRepository;
+    private final MailService mailService;
 
     @Override
-    public long saveUser(UserRequestDTO request) {
+    public long saveUser(UserRequestDTO request) throws MessagingException, UnsupportedEncodingException {
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -49,7 +54,7 @@ public class UserServiceImpl implements UserService {
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .password(request.getPassword())
-                .status(request.getStatus())
+                .status(UserStatus.INACTIVE)
                 .type(UserType.valueOf(request.getType().toUpperCase()))
                 .build();
 
@@ -66,6 +71,11 @@ public class UserServiceImpl implements UserService {
                         .build()));
 
         userRepository.save(user);
+
+        if(user.getId() != null){
+            // send email confirm
+            mailService.sendConfirmLink(user.getEmail(), user.getId(), "secretCode");
+        }
 
         log.info("User has added successfully, userId={}", user.getId());
 
@@ -197,6 +207,14 @@ public class UserServiceImpl implements UserService {
                 .totalPage(users.getTotalPages())
                 .items(users.stream().toList())
                 .build();
+    }
+
+    @Override
+    public void confirmUser(int userId, String secretCode) {
+        User user = getUserById(userId);
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        log.info("User has confirmed successfully, userId={}, secretCode = {}", userId, secretCode);
     }
 
 
