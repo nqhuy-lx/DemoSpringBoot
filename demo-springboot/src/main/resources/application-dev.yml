@@ -6,13 +6,15 @@ spring:
     url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/TestDB}
     username: ${POSTGRES_USER:postgres}
     password: ${POSTGRES_PASSWORD:root}
-    jpa:
-      properties:
-        hibernate:
-          dialect: org.hibernate.dialect.PostgreSQLDialect
-      show-sql: false
+  jpa:
+    properties:
       hibernate:
-        ddl-auto: none
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  kafka:
+    bootstrap-servers: localhost:29092
 
 springdoc:
   api-docs:

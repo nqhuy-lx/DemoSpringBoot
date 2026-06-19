@@ -7,6 +7,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -78,5 +79,32 @@ public class MailService {
         helper.setText(html, true);
         mailSender.send(mimeMessage);
         log.info("Email confirm send successfully, to {}", email);
+    }
+
+    @KafkaListener(topics = "confirm-account-topic", groupId = "confirm-account-group")
+    private void sendConfirmLinkByKafka(String message) throws MessagingException, UnsupportedEncodingException {
+        log.info("Sending confirm link by kafka");
+        String[] arr = message.split(",");
+        String email = arr[0].split("=")[1];
+        String id = arr[1].split("=")[1];
+        String secretCode = arr[2].split("=")[1];
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+        Context context = new Context();
+
+        String linkConfirm = String.format("http://localhost:8080/users/confirm/%s?secretCode=%s", id, secretCode);
+        Map<String,Object> properties = new HashMap<>();
+        properties.put("linkConfirm", linkConfirm);
+        context.setVariables(properties);
+
+        helper.setFrom(emailFrom, "HuyNguyen");
+        helper.setTo(email);
+        helper.setSubject("Please confirm your email");
+
+        String html = springTemplateEngine.process("confirm-email.html", context);
+        helper.setText(html, true);
+        mailSender.send(mimeMessage);
+        log.info("Email confirm send successfully by kafka");
     }
 }
