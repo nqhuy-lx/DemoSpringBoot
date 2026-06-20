@@ -10,9 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "Address")
+@Entity
 @Table(name = "tbl_address")
-public class Address extends AbstractEntity {
+public class Address extends AbstractEntity<Long> {
 
     @Column(name = "apartment_number")
     private String apartmentNumber;
