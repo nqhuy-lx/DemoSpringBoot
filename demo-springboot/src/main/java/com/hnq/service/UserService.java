@@ -6,10 +6,14 @@ import com.hnq.dto.response.UserDetailResponse;
 import com.hnq.util.UserStatus;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.UnsupportedEncodingException;
 
 public interface UserService {
+
+    UserDetailsService userDetailsService();
+
     long saveUser(UserRequestDTO request) throws MessagingException, UnsupportedEncodingException;
 
     void updateUser(long userId, UserRequestDTO request);

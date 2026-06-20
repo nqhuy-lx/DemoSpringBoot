@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -77,6 +78,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 //
 //    List<User> findByFirstNameAndLastNameAllIgnoreCase(String firstName, String lastName);
 
+    Optional<User> findByUsername(String username);
 
 
 }
