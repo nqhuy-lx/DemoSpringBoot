@@ -1,5 +1,6 @@
 package com.hnq.service;
 
+import com.hnq.util.TokenType;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtService {
@@ -7,7 +8,7 @@ public interface JwtService {
 
     String generateRefreshToken(UserDetails userDetails);
 
-    String extractUsername(String token);
+    String extractUsername(String token, TokenType type);
 
-    boolean isValidToken(String token, UserDetails userDetails);
+    boolean isValidToken(String token, TokenType type, UserDetails userDetails);
 }

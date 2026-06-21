@@ -2,6 +2,7 @@ package com.hnq.component;
 
 import com.hnq.service.JwtService;
 import com.hnq.service.UserService;
+import com.hnq.util.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,8 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -42,10 +41,10 @@ public class PreFilter extends OncePerRequestFilter {
         final String token = authorization.substring(7);
         log.info("token: {}", token);
 
-        final String username = jwtService.extractUsername(token);
+        final String username = jwtService.extractUsername(token, TokenType.ACCESS_TOKEN);
         if(StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userService.getUserDetailsService().loadUserByUsername(username);
-            if(jwtService.isValidToken(token, userDetails)) {
+            if(jwtService.isValidToken(token, TokenType.ACCESS_TOKEN, userDetails)) {
                 SecurityContext  securityContext = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

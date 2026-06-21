@@ -1,6 +1,7 @@
 package com.hnq.service.impl;
 
 import com.hnq.service.JwtService;
+import com.hnq.util.TokenType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,6 +17,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.hnq.util.TokenType.ACCESS_TOKEN;
+import static com.hnq.util.TokenType.REFRESH_TOKEN;
+
 @Service
 public class JwtServiceImpl implements JwtService {
 
@@ -27,6 +31,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
+
+    @Value("${jwt.refresh-key}")
+    private String refreshKey;
 
     @Override
     public String generateToken(UserDetails userDetails) {
@@ -40,14 +47,14 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractUsername(String token, TokenType type) {
+        return extractClaim(token, type, Claims::getSubject);
     }
 
     @Override
-    public boolean isValidToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername());
+    public boolean isValidToken(String token, TokenType type, UserDetails userDetails) {
+        final String username = extractUsername(token,  type);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token,  type));
     }
 
     private String generateToken(Map<String, Object> claims, UserDetails userDetails) {
@@ -56,7 +63,7 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * expiryHour))
-                .signWith(getKey(),  SignatureAlgorithm.HS256)
+                .signWith(getKey(ACCESS_TOKEN), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -66,21 +73,34 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * expiryDay))
-                .signWith(getKey(),  SignatureAlgorithm.HS256)
+                .signWith(getKey(REFRESH_TOKEN), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    private Key getKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+    private Key getKey(TokenType tokenType) {
+        byte[] keyBytes;
+        if (tokenType == ACCESS_TOKEN) {
+            keyBytes = Decoders.BASE64.decode(secretKey);
+        } else {
+            keyBytes = Decoders.BASE64.decode(refreshKey);
+        }
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
-        final Claims claims = extractAllClaims(token);
+    private <T> T extractClaim(String token, TokenType type, Function<Claims, T> claimResolver) {
+        final Claims claims = extractAllClaims(token, type);
         return claimResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(getKey()).build().parseClaimsJws(token).getBody();
+    private Claims extractAllClaims(String token, TokenType type) {
+        return Jwts.parserBuilder().setSigningKey(getKey(type)).build().parseClaimsJws(token).getBody();
+    }
+
+    private boolean isTokenExpired(String token, TokenType type) {
+        return extractExpiration(token, type).before(new Date());
+    }
+
+    private Date extractExpiration(String token, TokenType type) {
+        return extractClaim(token, type, Claims::getExpiration);
     }
 }

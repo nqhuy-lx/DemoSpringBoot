@@ -4,6 +4,7 @@ import com.hnq.dto.request.SignInRequest;
 import com.hnq.dto.response.TokenResponse;
 import com.hnq.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +35,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    public String refresh() {
-        return "refresh";
+    public ResponseEntity<TokenResponse> refresh(HttpServletRequest request) {
+        return new ResponseEntity<>(authService.refresh(request), HttpStatus.OK);
     }
 
 }
