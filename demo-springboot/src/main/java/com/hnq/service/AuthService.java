@@ -3,6 +3,7 @@ package com.hnq.service;
 import com.hnq.dto.request.SignInRequest;
 import com.hnq.dto.response.TokenResponse;
 import com.hnq.exception.InvalidDataException;
+import com.hnq.model.Token;
 import com.hnq.model.User;
 import com.hnq.repository.UserRepository;
 import com.hnq.util.TokenType;
@@ -24,8 +25,9 @@ import java.util.UUID;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final AuthenticationManager  authenticationManager;
+    private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final TokenService tokenService;
 
     public TokenResponse authenticate(SignInRequest request) {
 
@@ -34,6 +36,13 @@ public class AuthService {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("username or password incorrect"));
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        // save db
+        tokenService.saveToken(Token.builder()
+                .username(user.getUsername())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build());
+
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -42,11 +51,11 @@ public class AuthService {
     }
 
     public TokenResponse refresh(HttpServletRequest request) {
-        String refreshToken = request.getHeader("x-token");
-        log.info("x-token = {}", refreshToken);
+        String refreshToken = request.getHeader("r-token");
+        log.info("r-token = {}", refreshToken);
 
-        if( StringUtils.isBlank(refreshToken)) {
-            throw new InvalidDataException("x-token is blank");
+        if (StringUtils.isBlank(refreshToken)) {
+            throw new InvalidDataException("r-token is blank");
         }
         // extract user form token
         final String username = jwtService.extractUsername(refreshToken, TokenType.REFRESH_TOKEN);
@@ -55,7 +64,7 @@ public class AuthService {
         Optional<User> user = userRepository.findByUsername(username);
         log.info("userId = {}", user.get().getId());
 
-        if(!jwtService.isValidToken(refreshToken, TokenType.REFRESH_TOKEN, user.get())){
+        if (!jwtService.isValidToken(refreshToken, TokenType.REFRESH_TOKEN, user.get())) {
             throw new InvalidDataException("token is invalid");
         }
 
@@ -66,5 +75,20 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .userId(user.get().getId())
                 .build();
+    }
+
+    public String logout(HttpServletRequest request) {
+        String refreshToken = request.getHeader("a-token");
+        log.info("a-token = {}", refreshToken);
+
+        if (StringUtils.isBlank(refreshToken)) {
+            throw new InvalidDataException("a-token is blank");
+        }
+
+        final String username = jwtService.extractUsername(refreshToken, TokenType.ACCESS_TOKEN);
+
+        Token token = tokenService.getTokenByUsername(username);
+        tokenService.deleteToken(token);
+        return "Logout";
     }
 }

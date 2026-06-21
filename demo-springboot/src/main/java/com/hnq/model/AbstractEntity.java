@@ -30,11 +30,9 @@ public abstract class AbstractEntity<T> {
 
     @Column(name = "created_at")
     @CreationTimestamp // tu dong insert time create
-    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp // tu dong insert time update
-    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 }
