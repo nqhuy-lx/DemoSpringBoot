@@ -12,7 +12,7 @@ import java.io.UnsupportedEncodingException;
 
 public interface UserService {
 
-    UserDetailsService userDetailsService();
+    UserDetailsService getUserDetailsService();
 
     long saveUser(UserRequestDTO request) throws MessagingException, UnsupportedEncodingException;
 

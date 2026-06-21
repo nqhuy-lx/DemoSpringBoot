@@ -80,7 +80,7 @@ public class AppConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService.userDetailsService());
+        provider.setUserDetailsService(userService.getUserDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

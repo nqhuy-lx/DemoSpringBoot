@@ -25,7 +25,7 @@ public class AuthService {
 
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new UsernameNotFoundException("username or password incorrect"));
         String accessToken = jwtService.generateToken(user);
-        String refreshToken = "Fake  refresh token";
+        String refreshToken = jwtService.generateRefreshToken(user);
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

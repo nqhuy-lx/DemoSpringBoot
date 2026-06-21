@@ -21,9 +21,15 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
 openapi:
   service:
     api-docs: api-service
     server: http://localhost:${server.port}
     title: API Document
     version: 1.0.0
+
+jwt:
+  expiry-hour: 8
+  expiry-day: 30
+  secret-key: e10ccfd6a792ea78abd455182b7e16c17f4fb6a1f6aebeeee876794a164784a8

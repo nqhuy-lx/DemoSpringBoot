@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService getUserDetailsService() {
         return username -> userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
