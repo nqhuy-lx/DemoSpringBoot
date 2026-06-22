@@ -34,3 +34,4 @@ jwt:
   expiry-day: 30
   secret-key: e10ccfd6a792ea78abd455182b7e16c17f4fb6a1f6aebeeee876794a164784a8
   refresh-key: e10ccfd6a159ea78abd455182b7e16c17f4fb6a1f6aebaaaa876794a164784a8
+  reset-key: e10bbfd6a159ea78abd400182b7e16c17f4fb6a1f6aebccee876794a164784a8

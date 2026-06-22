@@ -1,5 +1,8 @@
 package com.hnq.controller;
 
+import com.hnq.dto.request.ForgotPasswordDTO;
+import com.hnq.dto.request.ResetDTO;
+import com.hnq.dto.request.ResetPasswordDTO;
 import com.hnq.dto.request.SignInRequest;
 import com.hnq.dto.response.TokenResponse;
 import com.hnq.service.AuthService;
@@ -37,6 +40,21 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(HttpServletRequest request) {
         return new ResponseEntity<>(authService.refresh(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordDTO request) {
+        return new ResponseEntity<>(authService.forgotPassword(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetDTO request) {
+        return new ResponseEntity<>(authService.resetPassword(request), HttpStatus.OK);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordDTO request) {
+        return new ResponseEntity<>(authService.changePassword(request), HttpStatus.OK);
     }
 
 }
